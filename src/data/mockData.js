@@ -170,3 +170,67 @@ export const authenticateCitizen = (licenseNumber, password) => {
   }
   return null;
 };
+
+// --- Mock datasets for the Police Admin Dashboard ---
+export const finesData = mockFines.map(f => ({
+  ...f,
+  amount: String(f.baseAmount || 3000),
+  violation: f.violation || "Traffic Violation"
+}));
+
+export const districtCollection = [
+  { district: 'Colombo', revenue: 42.1, fines: 12840 },
+  { district: 'Gampaha', revenue: 28.5, fines: 8420 },
+  { district: 'Kalutara', revenue: 18.2, fines: 5610 },
+  { district: 'Kandy', revenue: 22.4, fines: 6840 },
+  { district: 'Galle', revenue: 15.6, fines: 4980 }
+];
+
+export const categoryRevenue = [
+  { category: 'Speeding', revenue: 52.6 },
+  { category: 'Parking', revenue: 17.4 },
+  { category: 'Signals', revenue: 25.2 },
+  { category: 'License', revenue: 31.0 },
+  { category: 'Dangerous', revenue: 24.8 }
+];
+
+export const officersData = [
+  { badgeNumber: "PS-88452", name: "Inspector R. M. Bandara", rank: "Inspector", district: "Colombo 05", finesIssued: 142 },
+  { badgeNumber: "PS-74931", name: "Sergeant A. H. Silva", rank: "Sergeant", district: "Colombo 03", finesIssued: 98 },
+  { badgeNumber: "PS-12948", name: "Sergeant S. K. Wickrama", rank: "Sergeant", district: "Kadawatha", finesIssued: 115 },
+  { badgeNumber: "SI-99214", name: "Sub-Inspector K. L. Perera", rank: "Sub-Inspector", district: "Nugegoda", finesIssued: 84 }
+];
+
+export const paymentData = [
+  { receiptNumber: "REC-8849-01", paymentMethod: "Visa ending in 4242", amount: 2000, status: "paid", paidAt: "2026-06-05 16:42", referenceNumber: "REF-1111-03" },
+  { receiptNumber: "REC-1283-02", paymentMethod: "MasterCard ending in 9912", amount: 3000, status: "paid", paidAt: "2026-05-05 10:30", referenceNumber: "REF-4422-03" }
+];
+
+export const usersData = [
+  { name: 'Supt. Premasiri', email: 'admin@srilankapolice.com', role: 'Super Admin', department: 'HQ Administration', status: 'active' },
+  { name: 'Inspector R. M. Bandara', email: 'officer@srilankapolice.com', role: 'Officer', department: 'Traffic Control', status: 'active' },
+  { name: 'Hirushi Perera', email: 'hirushi@example.com', role: 'Driver', department: 'Public Driver', status: 'active' },
+  { name: 'Aruni Fernando', email: 'aruni@example.com', role: 'Driver', department: 'Public Driver', status: 'active' }
+];
+
+export const monthlyCollections = [
+  { month: 'Jan', current: 12.5, previous: 10.2 },
+  { month: 'Feb', current: 15.1, previous: 11.5 },
+  { month: 'Mar', current: 14.2, previous: 12.0 },
+  { month: 'Apr', current: 16.8, previous: 13.1 },
+  { month: 'May', current: 18.0, previous: 14.5 },
+  { month: 'Jun', current: 17.5, previous: 15.0 },
+  { month: 'Jul', current: 19.2, previous: 16.2 },
+  { month: 'Aug', current: 20.5, previous: 17.0 },
+  { month: 'Sep', current: 18.9, previous: 16.8 },
+  { month: 'Oct', current: 21.2, previous: 18.0 },
+  { month: 'Nov', current: 23.0, previous: 19.5 },
+  { month: 'Dec', current: 25.4, previous: 21.0 }
+];
+
+export const violationDistribution = [
+  { name: 'Speeding', value: 45 },
+  { name: 'Reckless Driving', value: 25 },
+  { name: 'Seat Belt', value: 15 },
+  { name: 'Mobile Phone', value: 15 }
+];
