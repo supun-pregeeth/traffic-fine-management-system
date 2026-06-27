@@ -2,18 +2,23 @@ import { Card, CardContent, Grid, Stack, Typography } from '@mui/material';
 import { paymentData } from '../../data/mockData';
 import TableCard from '../shared/TableCard';
 
-export default function PaymentsOverview() {
+interface PaymentsOverviewProps {
+  recentPayments?: any[];
+}
+
+export default function PaymentsOverview({ recentPayments }: PaymentsOverviewProps) {
+  const displayPayments = recentPayments && recentPayments.length > 0 ? recentPayments : paymentData;
   return (
     <Stack spacing={3}>
       <Grid container spacing={2}>
         {[
-          ['Completed', '24,312'],
+          ['Completed', displayPayments.length.toLocaleString()],
           ['Pending', '1,847'],
           ['Via Visa', '41%'],
           ['Via LankaPay', '34%']
         ].map(([label, value]) => (
           <Grid key={label} size={{ xs: 12, sm: 6, lg: 3 }}>
-            <Card sx={{ boxShadow: 'soft' }}>
+            <Card sx={{ boxShadow: 1 }}>
               <CardContent>
                 <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800 }}>
                   {label}
@@ -26,7 +31,7 @@ export default function PaymentsOverview() {
           </Grid>
         ))}
       </Grid>
-      <TableCard title="Payment Transactions" rows={paymentData} kind="payment" />
+      <TableCard title="Payment Transactions" rows={displayPayments} kind="payment" />
     </Stack>
   );
 }

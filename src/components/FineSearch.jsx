@@ -25,7 +25,7 @@ export default function FineSearch({ onFineFound }) {
 
     setIsLoading(true);
 
-    fetch(`http://localhost:8080/api/fines/${refNum}`)
+    fetch(`/api/fines/${refNum}`)
       .then(res => {
         if (!res.ok) {
           throw new Error('Fine not found');

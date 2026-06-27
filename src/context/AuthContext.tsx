@@ -33,18 +33,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   const login = async (username: string, password: string) => {
-    const normalized = username.trim().toLowerCase();
-    const isValid = normalized === 'admin' && password === 'Admin@123';
-
-    if (isValid) {
-      setUser({ username: 'admin', role: 'Super Admin' });
-      return true;
+    try {
+      let email = username.trim();
+      // Allow shorthand 'admin' to map to the seeded admin email
+      if (email.toLowerCase() === 'admin') {
+        email = 'admin@srilankapolice.com';
+      }
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      if (!response.ok) return false;
+      const json = await response.json();
+      const authData = json.data;
+      if (authData && authData.token) {
+        localStorage.setItem('police-admin-token', authData.token);
+        setUser({ username: authData.email || email, role: 'Super Admin' });
+        return true;
+      }
+    } catch (e) {
+      console.error("Backend login request failed", e);
     }
-
     return false;
   };
 
-  const logout = () => setUser(null);
+  const logout = () => {
+    localStorage.removeItem('police-admin-token');
+    setUser(null);
+  };
 
   const value = useMemo(() => ({ user, login, logout }), [user]);
 

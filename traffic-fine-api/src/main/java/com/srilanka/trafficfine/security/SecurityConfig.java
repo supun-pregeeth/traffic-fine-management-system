@@ -50,8 +50,7 @@ public class SecurityConfig {
             "/swagger-ui.html",
             "/v3/api-docs/**",
             "/v3/api-docs",
-            "/h2-console/**",
-            "/fines/*"
+            "/h2-console/**"
     };
 
     @Bean
@@ -73,7 +72,11 @@ public class SecurityConfig {
             // Authorization rules
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                // Public: anyone can look up a fine by reference number (single path segment)
+                .requestMatchers(HttpMethod.GET, "/fines/{referenceNumber}").permitAll()
+                // Protected: issuing fines requires OFFICER
                 .requestMatchers(HttpMethod.POST, "/fines").hasRole("OFFICER")
+                // Protected: driver-specific and list endpoints require authentication
                 .requestMatchers(HttpMethod.GET, "/fines/**").hasAnyRole("OFFICER", "ADMIN", "DRIVER")
                 .requestMatchers("/payments/**").hasAnyRole("DRIVER", "ADMIN")
                 .requestMatchers("/admin/**").hasRole("ADMIN")

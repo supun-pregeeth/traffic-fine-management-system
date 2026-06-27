@@ -1,10 +1,26 @@
 import { Grid, Paper, Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { categoryRevenue } from '../../data/mockData';
-import { finesData } from '../../data/mockData';
+import { useMemo } from 'react';
+import { categoryRevenue, finesData } from '../../data/mockData';
 import ChartCard from '../shared/ChartCard';
 
-export default function CategoryAnalytics() {
+interface CategoryAnalyticsProps {
+  analyticsData?: {
+    collectionsByCategory?: Record<string, number>;
+  };
+}
+
+export default function CategoryAnalytics({ analyticsData }: CategoryAnalyticsProps) {
+  const chartData = useMemo(() => {
+    if (analyticsData?.collectionsByCategory && Object.keys(analyticsData.collectionsByCategory).length > 0) {
+      return Object.entries(analyticsData.collectionsByCategory).map(([cat, rev]) => ({
+        category: cat,
+        revenue: Number(rev) / 1000000
+      }));
+    }
+    return categoryRevenue;
+  }, [analyticsData]);
+
   return (
     <Stack spacing={3}>
       <Grid container spacing={3}>
@@ -25,7 +41,7 @@ export default function CategoryAnalytics() {
         <Grid size={{ xs: 12, md: 6 }}>
           <ChartCard title="Revenue by Category" subtitle="Total amount collected (LKR M)">
             <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={categoryRevenue}>
+              <BarChart data={chartData}>
                 <XAxis dataKey="category" tickLine={false} axisLine={false} />
                 <YAxis />
                 <Tooltip />
@@ -35,16 +51,16 @@ export default function CategoryAnalytics() {
           </ChartCard>
         </Grid>
       </Grid>
-      <Paper sx={{ p: 0, boxShadow: 'soft' }}>
+      <Paper sx={{ p: 0, boxShadow: 1 }}>
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Category</TableCell>
-              <TableCell>Fines Issued</TableCell>
-              <TableCell>Paid</TableCell>
-              <TableCell>Pending</TableCell>
-              <TableCell>Revenue (LKR)</TableCell>
-              <TableCell>Avg Fine</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Category</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Fines Issued</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Paid</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Pending</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Revenue (LKR)</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Avg Fine</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

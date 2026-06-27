@@ -23,7 +23,7 @@ function App() {
   // Fetch driver fines from backend
   const fetchDriverFines = (citizen) => {
     if (!citizen || !citizen.id) return;
-    fetch(`http://localhost:8080/api/fines/driver/${citizen.id}`, {
+    fetch(`/api/fines/driver/${citizen.id}`, {
       headers: {
         'Authorization': `Bearer ${citizen.token}`
       }
@@ -103,7 +103,7 @@ function App() {
 
   // Handle successful mock payment
   const handlePaymentSuccess = (transactionData) => {
-    fetch('http://localhost:8080/api/payments/pay', {
+    fetch('/api/payments/pay', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

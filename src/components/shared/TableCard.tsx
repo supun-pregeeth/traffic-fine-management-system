@@ -27,11 +27,11 @@ export default function TableCard({ title, rows = [], kind }: TableCardProps) {
                 )}
                 {kind === 'officer' && (
                   <>
-                    <TableCell sx={{ fontWeight: 700 }}>Badge</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Rank</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>Role</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>District</TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Fines Issued</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>Phone</TableCell>
                   </>
                 )}
                 {kind === 'payment' && (
@@ -56,36 +56,36 @@ export default function TableCard({ title, rows = [], kind }: TableCardProps) {
                       <TableCell>{row.violation || row.description}</TableCell>
                       <TableCell>LKR {row.baseAmount || row.amount}</TableCell>
                       <TableCell>
-                        <Chip 
-                          label={(row.status || '').toUpperCase()} 
-                          color={row.status === 'paid' ? 'success' : 'warning'} 
-                          size="small" 
+                        <Chip
+                          label={(row.status || '').toString().toUpperCase()}
+                          color={(row.status || '').toString().toLowerCase() === 'paid' ? 'success' : 'warning'}
+                          size="small"
                         />
                       </TableCell>
                     </>
                   )}
                   {kind === 'officer' && (
                     <>
-                      <TableCell>{row.badgeNumber || row.badge}</TableCell>
                       <TableCell>{row.name}</TableCell>
-                      <TableCell>{row.rank || 'Inspector'}</TableCell>
-                      <TableCell>{row.district || 'Colombo'}</TableCell>
-                      <TableCell>{row.finesIssued || row.count || 0}</TableCell>
+                      <TableCell>{row.email || '—'}</TableCell>
+                      <TableCell>{row.role || row.rank || 'OFFICER'}</TableCell>
+                      <TableCell>{row.district || '—'}</TableCell>
+                      <TableCell>{row.phoneNumber || row.finesIssued || '—'}</TableCell>
                     </>
                   )}
                   {kind === 'payment' && (
                     <>
-                      <TableCell>{row.receiptNumber || row.transactionReference || row.ref}</TableCell>
+                      <TableCell>{row.fineReferenceNumber || row.receiptNumber || row.transactionReference || row.ref}</TableCell>
                       <TableCell>{row.paymentMethod || row.method}</TableCell>
                       <TableCell>LKR {row.amount}</TableCell>
                       <TableCell>
-                        <Chip 
-                          label={(row.status || row.transactionStatus || 'SUCCESS').toUpperCase()} 
-                          color="success" 
-                          size="small" 
+                        <Chip
+                          label={(row.transactionStatus || row.status || 'SUCCESS').toString().toUpperCase()}
+                          color="success"
+                          size="small"
                         />
                       </TableCell>
-                      <TableCell>{row.paidAt || row.date}</TableCell>
+                      <TableCell>{row.paidAt ? new Date(row.paidAt).toLocaleString('en-GB') : row.date}</TableCell>
                     </>
                   )}
                 </TableRow>

@@ -47,7 +47,7 @@ export default function CitizenLogin({ onLoginSuccess, onCancel, activeFine = nu
       }
     }
 
-    fetch('http://localhost:8080/api/auth/login', {
+    fetch('/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -116,7 +116,7 @@ export default function CitizenLogin({ onLoginSuccess, onCancel, activeFine = nu
 
     setIsLoading(true);
 
-    fetch('http://localhost:8080/api/auth/register', {
+    fetch('/api/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -175,7 +175,7 @@ export default function CitizenLogin({ onLoginSuccess, onCancel, activeFine = nu
     setIsLoading(true);
     let loginEmail = license.trim().toLowerCase() === 'b1234567' ? 'hirushi@example.com' : 'aruni@example.com';
     
-    fetch('http://localhost:8080/api/auth/login', {
+    fetch('/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

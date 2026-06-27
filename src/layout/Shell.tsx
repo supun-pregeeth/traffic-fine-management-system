@@ -13,6 +13,8 @@ import StatusPage from '../pages/StatusPage';
 import HelpPage from '../pages/HelpPage';
 import AdminPage from '../pages/AdminPage';
 import AdminLoginPage from '../pages/AdminLoginPage';
+import CitizenLoginPage from '../pages/CitizenLoginPage';
+import CitizenDashboardPage from '../pages/CitizenDashboardPage';
 import { navItems } from '../config/navigation';
 import { useAuth } from '../context/AuthContext';
 
@@ -73,15 +75,40 @@ export default function Shell({ defaultTab = 'home' }: { defaultTab?: string }) 
             ))}
           </Box>
 
-          {auth.user ? (
-            <Button variant="contained" color="secondary" onClick={() => { auth.logout(); navigate('/'); }} sx={{ display: { xs: 'none', md: 'inline-flex' }, fontWeight: 700 }}>
-              Logout
+          <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
+            <Button
+              variant="outlined"
+              color="inherit"
+              onClick={() => {
+                const savedCitizen = localStorage.getItem('citizen-session');
+                if (savedCitizen) {
+                  navigate('/citizen/dashboard');
+                } else {
+                  navigate('/citizen/login');
+                }
+              }}
+              sx={{
+                color: 'rgba(255,255,255,0.88)',
+                borderColor: 'rgba(255,255,255,0.3)',
+                '&:hover': {
+                  borderColor: 'secondary.main',
+                  color: 'secondary.main'
+                }
+              }}
+            >
+              Citizen Portal
             </Button>
-          ) : (
-            <Button variant="contained" color="secondary" onClick={() => navigate('/admin/login')} sx={{ display: { xs: 'none', md: 'inline-flex' }, fontWeight: 700 }}>
-              Admin Login
-            </Button>
-          )}
+
+            {auth.user ? (
+              <Button variant="contained" color="secondary" onClick={() => { auth.logout(); navigate('/'); }} sx={{ display: { xs: 'none', md: 'inline-flex' }, fontWeight: 700 }}>
+                Logout
+              </Button>
+            ) : (
+              <Button variant="contained" color="secondary" onClick={() => navigate('/admin/login')} sx={{ display: { xs: 'none', md: 'inline-flex' }, fontWeight: 700 }}>
+                Admin Login
+              </Button>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
 
@@ -92,6 +119,8 @@ export default function Shell({ defaultTab = 'home' }: { defaultTab?: string }) 
         <Route path="/help" element={<HelpPage />} />
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin" element={<RequireAdmin><AdminPage /></RequireAdmin>} />
+        <Route path="/citizen/login" element={<CitizenLoginPage />} />
+        <Route path="/citizen/dashboard" element={<CitizenDashboardPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Box>

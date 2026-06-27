@@ -14,10 +14,21 @@ export default function PaymentPage() {
         <PaymentPortal
           amount={amount}
           onPaymentSuccess={(transactionData) => {
-            // After payment, return to status showing the ticket is paid
-            navigate('/status', { state: { fine: { ...fine, status: 'paid', ...transactionData } } });
+            const savedCitizen = localStorage.getItem('citizen-session');
+            if (savedCitizen) {
+              navigate('/citizen/dashboard');
+            } else {
+              navigate('/status', { state: { fine: { ...fine, status: 'paid', ...transactionData } } });
+            }
           }}
-          onCancel={() => navigate('/status', { state: { fine } })}
+          onCancel={() => {
+            const savedCitizen = localStorage.getItem('citizen-session');
+            if (savedCitizen) {
+              navigate('/citizen/dashboard');
+            } else {
+              navigate('/status', { state: { fine } });
+            }
+          }}
         />
       ) : (
         <Card sx={{ p: 2, textAlign: 'center' }}>
