@@ -1,0 +1,186 @@
+:root {
+  /* Colors */
+  --primary-rgb: 15, 32, 67;
+  --primary: #0f2043;
+  --primary-hover: #172e5c;
+  --primary-light: #f5c043;
+  --accent: #f5c043;
+  --accent-hover: #e0ac2b;
+  --accent-rgb: 245, 192, 67;
+  
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.08);
+  --warning: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.08);
+  --error: #ef4444;
+  --error-bg: rgba(239, 68, 68, 0.08);
+  
+  /* Modern Spaced Theme Details */
+  --bg: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  --bg-card: #ffffff;
+  --border: #e2e8f0;
+  --text: #475569;
+  --text-h: #0f172a;
+  --text-muted: #64748b;
+  --shadow: 
+    0 10px 25px -5px rgba(15, 32, 67, 0.05), 
+    0 8px 16px -6px rgba(15, 32, 67, 0.03);
+  --shadow-lg: 
+    0 25px 50px -12px rgba(15, 32, 67, 0.08), 
+    0 12px 24px -8px rgba(15, 32, 67, 0.04);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(226, 232, 240, 0.85);
+  
+  /* Typographic & Layout Spacing */
+  --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Dark theme overrides with deep cosmic slate tones */
+body.dark {
+  --bg: linear-gradient(180deg, #090d16 0%, #111827 100%);
+  --bg-card: #1e293b;
+  --border: #334155;
+  --text: #94a3b8;
+  --text-h: #f8fafc;
+  --text-muted: #64748b;
+  --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 30px 60px -15px rgba(0, 0, 0, 0.45);
+  --primary: #1e293b;
+  --primary-hover: #334155;
+  --primary-light: #f5c043;
+  --glass-bg: rgba(30, 41, 59, 0.85);
+  --glass-border: rgba(51, 65, 85, 0.85);
+}
+
+/* Reset and Globals */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  letter-spacing: 0.2px;
+  transition: background-color 0.3s, color 0.3s;
+  min-height: 100vh;
+  background-attachment: fixed;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--primary-light);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+a:hover {
+  text-decoration: underline;
+  opacity: 0.9;
+}
+
+button, input, select {
+  font-family: inherit;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(24px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes successPulse {
+  0% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.3); }
+  70% { transform: scale(1); box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Print Overrides */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* Hide all non-printable elements */
+  .header, 
+  .steps-indicator, 
+  .app-footer, 
+  .receipt-actions, 
+  .success-banner, 
+  .license-sms-alert,
+  .citizen-portal-invite,
+  .faq-section {
+    display: none !important;
+  }
+  
+  /* Reset container layout for clean page rendering */
+  .app-container, .main-content, #root {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  .printable-area {
+    display: block !important;
+    width: 100% !important;
+    max-width: 640px !important;
+    margin: 0 auto !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    position: relative !important;
+  }
+}
