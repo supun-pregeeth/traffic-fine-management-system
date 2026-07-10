@@ -4,6 +4,8 @@ import com.srilanka.trafficfine.dto.response.AnalyticsResponse;
 import com.srilanka.trafficfine.enums.FineStatus;
 import com.srilanka.trafficfine.repository.PaymentRepository;
 import com.srilanka.trafficfine.repository.TrafficFineRepository;
+import com.srilanka.trafficfine.repository.UserRepository;
+import com.srilanka.trafficfine.repository.NotificationLogRepository;
 import com.srilanka.trafficfine.service.AnalyticsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     private final TrafficFineRepository fineRepository;
     private final PaymentRepository paymentRepository;
+    private final UserRepository userRepository;
+    private final NotificationLogRepository notificationLogRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -77,6 +81,16 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 .totalPaidFines(totalPaid)
                 .totalPendingFines(totalPending)
                 .build();
+    }
+
+    @Override
+    public java.util.List<com.srilanka.trafficfine.entity.User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public java.util.List<com.srilanka.trafficfine.entity.NotificationLog> getAllNotificationLogs() {
+        return notificationLogRepository.findAll();
     }
 
     // ─── Utility ─────────────────────────────────────────────────────────────

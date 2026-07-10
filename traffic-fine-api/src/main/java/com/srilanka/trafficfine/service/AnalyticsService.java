@@ -18,4 +18,8 @@ public interface AnalyticsService {
     Map<String, BigDecimal> getMonthlyRevenue();
 
     AnalyticsResponse getDashboardSummary();
+
+    java.util.List<com.srilanka.trafficfine.entity.User> getAllUsers();
+
+    java.util.List<com.srilanka.trafficfine.entity.NotificationLog> getAllNotificationLogs();
 }

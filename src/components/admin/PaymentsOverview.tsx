@@ -1,24 +1,44 @@
 import { Card, CardContent, Grid, Stack, Typography } from '@mui/material';
-import { paymentData } from '../../data/mockData';
+import { useEffect, useState } from 'react';
+import { fetchAllPayments } from '../../api/adminApi';
 import TableCard from '../shared/TableCard';
 
-interface PaymentsOverviewProps {
-  recentPayments?: any[];
-}
+export default function PaymentsOverview() {
+  const [paymentData, setPaymentData] = useState<Array<Record<string, any>>>([]);
 
-export default function PaymentsOverview({ recentPayments }: PaymentsOverviewProps) {
-  const displayPayments = recentPayments && recentPayments.length > 0 ? recentPayments : paymentData;
+  useEffect(() => {
+    async function loadPayments() {
+      try {
+        const response = await fetchAllPayments();
+        // API returns ApiResponse<List<PaymentResponse>> where data is array
+        const payments = response.data?.data ?? [];
+        setPaymentData(payments.map((p: any) => ({
+          id: p.id,
+          reference: p.fineReferenceNumber,
+          amount: p.amount,
+          method: p.paymentMethod,
+          status: p.transactionStatus,
+          paidAt: p.paidAt
+        })));
+      } catch (error) {
+        console.error('Unable to load payment records', error);
+      }
+    }
+
+    loadPayments();
+  }, []);
+
   return (
     <Stack spacing={3}>
       <Grid container spacing={2}>
         {[
-          ['Completed', displayPayments.length.toLocaleString()],
+          ['Completed', '24,312'],
           ['Pending', '1,847'],
           ['Via Visa', '41%'],
           ['Via LankaPay', '34%']
         ].map(([label, value]) => (
           <Grid key={label} size={{ xs: 12, sm: 6, lg: 3 }}>
-            <Card sx={{ boxShadow: 1 }}>
+            <Card sx={{ boxShadow: 'soft' }}>
               <CardContent>
                 <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800 }}>
                   {label}
@@ -31,7 +51,7 @@ export default function PaymentsOverview({ recentPayments }: PaymentsOverviewPro
           </Grid>
         ))}
       </Grid>
-      <TableCard title="Payment Transactions" rows={displayPayments} kind="payment" />
+      <TableCard title="Payment Transactions" rows={paymentData} kind="payment" />
     </Stack>
   );
 }

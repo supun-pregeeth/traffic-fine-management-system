@@ -1,13 +1,32 @@
 import { Paper, Stack, Typography, Chip, Box } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { statusMeta } from '../../config/theme';
+import apiClient from '../../api/client';
+
+type NotificationRow = {
+  id: number;
+  phoneNumber: string;
+  message: string;
+  status: string;
+  recipientName?: string;
+  fineReference?: string;
+  sentAt?: string;
+};
 
 export default function NotificationsPanel() {
-  const notifications = [
-    ['PC Samantha Fernando', 'Payment confirmation SMS sent - TF-2024-0087432', 'paid'],
-    ['SGT Anil Wickrama', 'Payment confirmation SMS sent - TF-2024-0087391', 'paid'],
-    ['PC Ravi Murugesan', 'SMS delivery failed - TF-2024-0087372 - Invalid number', 'failed'],
-    ['INS Nirmala Peris', 'Payment confirmation SMS sent - TF-2024-0087350', 'paid']
-  ] as const;
+  const [notifications, setNotifications] = useState<NotificationRow[]>([]);
+
+  useEffect(() => {
+    async function loadLogs() {
+      try {
+        const res = await apiClient.get('/admin/notifications');
+        setNotifications(res.data?.data ?? []);
+      } catch (err) {
+        console.error('Failed to load notification logs', err);
+      }
+    }
+    loadLogs();
+  }, []);
 
   return (
     <Paper sx={{ p: 3, boxShadow: 'soft' }}>
@@ -15,15 +34,15 @@ export default function NotificationsPanel() {
         SMS Notification Log
       </Typography>
       <Stack spacing={1.5}>
-        {notifications.map(([officer, message, status]) => (
-          <Paper key={message} variant="outlined" sx={{ p: 2, display: 'flex', justifyContent: 'space-between', gap: 2, alignItems: 'center', bgcolor: 'background.default' }}>
+        {notifications.map((n) => (
+          <Paper key={n.id} variant="outlined" sx={{ p: 2, display: 'flex', justifyContent: 'space-between', gap: 2, alignItems: 'center', bgcolor: 'background.default' }}>
             <Box>
-              <Typography fontWeight={800}>{officer}</Typography>
+              <Typography sx={{ fontWeight: 800 }}>{n.recipientName ?? n.phoneNumber}</Typography>
               <Typography variant="body2" color="text.secondary">
-                {message}
+                {n.message}
               </Typography>
             </Box>
-            <Chip label={statusMeta[status].label} color={statusMeta[status].color} variant="outlined" />
+            <Chip label={statusMeta[n.status?.toLowerCase()]?.label ?? n.status} color={statusMeta[n.status?.toLowerCase()]?.color ?? 'default'} variant="outlined" />
           </Paper>
         ))}
       </Stack>

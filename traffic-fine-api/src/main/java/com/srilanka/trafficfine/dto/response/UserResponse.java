@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-
     private Long id;
     private String name;
     private String email;
@@ -23,11 +22,14 @@ public class UserResponse {
     private LocalDateTime createdAt;
 
     public static UserResponse from(User user) {
+        if (user == null) {
+            return null;
+        }
         return UserResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
-                .role(user.getRole().name())
+                .role(user.getRole() != null ? user.getRole().name() : null)
                 .phoneNumber(user.getPhoneNumber())
                 .district(user.getDistrict())
                 .createdAt(user.getCreatedAt())

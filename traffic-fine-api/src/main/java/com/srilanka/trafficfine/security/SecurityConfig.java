@@ -49,8 +49,7 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/v3/api-docs/**",
-            "/v3/api-docs",
-            "/h2-console/**"
+            "/v3/api-docs"
     };
 
     @Bean
@@ -62,22 +61,19 @@ public class SecurityConfig {
             // Configure CORS
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-            // Frame options for H2 console
-            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
-
             // Stateless sessions — no HttpSession
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
             // Authorization rules
             .authorizeHttpRequests(auth -> auth
+                // Allow H2 console (useful for dev profile)
+                .requestMatchers("/h2-console/**", "/api/h2-console/**", "/h2-console", "/api/h2-console").permitAll()
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                // Public: anyone can look up a fine by reference number (single path segment)
-                .requestMatchers(HttpMethod.GET, "/fines/{referenceNumber}").permitAll()
-                // Protected: issuing fines requires OFFICER
                 .requestMatchers(HttpMethod.POST, "/fines").hasRole("OFFICER")
-                // Protected: driver-specific and list endpoints require authentication
-                .requestMatchers(HttpMethod.GET, "/fines/**").hasAnyRole("OFFICER", "ADMIN", "DRIVER")
+                .requestMatchers(HttpMethod.GET, "/fines/driver/**").hasAnyRole("OFFICER", "ADMIN", "DRIVER")
+                .requestMatchers(HttpMethod.GET, "/fines/{referenceNumber}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/fines").hasRole("ADMIN")
                 .requestMatchers("/payments/**").hasAnyRole("DRIVER", "ADMIN")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
@@ -88,6 +84,9 @@ public class SecurityConfig {
 
             // JWT filter runs before Spring Security's UsernamePasswordAuthenticationFilter
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // H2 console uses frames — allow same-origin frames so console renders correctly
+        http.headers(headers -> headers.frameOptions().sameOrigin());
 
         return http.build();
     }

@@ -50,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("New user registered: {} [{}]", user.getEmail(), user.getRole());
 
         String token = jwtTokenProvider.generateTokenFromEmail(user.getEmail());
-        return AuthResponse.of(user.getId(), token, user.getEmail(), user.getName(), user.getRole().name());
+        return AuthResponse.of(token, user.getEmail(), user.getName(), user.getRole().name(), user.getId());
     }
 
     @Override
@@ -66,6 +66,6 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow();
 
         log.info("User logged in: {} [{}]", user.getEmail(), user.getRole());
-        return AuthResponse.of(user.getId(), token, user.getEmail(), user.getName(), user.getRole().name());
+        return AuthResponse.of(token, user.getEmail(), user.getName(), user.getRole().name(), user.getId());
     }
 }

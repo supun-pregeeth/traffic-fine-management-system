@@ -1,8 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { loginAdmin } from '../api/authApi';
+import { setAuthToken } from '../api/client';
 
 interface User {
   username: string;
   role: 'Super Admin';
+  token: string;
 }
 
 interface AuthContextType {
@@ -21,47 +24,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) as User : null;
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored) as User;
+    setAuthToken(parsed.token);
+    return parsed;
   });
 
   useEffect(() => {
     if (user) {
+      setAuthToken(user.token);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     } else {
+      setAuthToken(undefined);
       localStorage.removeItem(STORAGE_KEY);
     }
   }, [user]);
 
   const login = async (username: string, password: string) => {
     try {
-      let email = username.trim();
-      // Allow shorthand 'admin' to map to the seeded admin email
-      if (email.toLowerCase() === 'admin') {
-        email = 'admin@srilankapolice.com';
+      const response = await loginAdmin(username, password);
+      const payload = response.data?.data;
+      if (!payload?.token) {
+        return false;
       }
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      if (!response.ok) return false;
-      const json = await response.json();
-      const authData = json.data;
-      if (authData && authData.token) {
-        localStorage.setItem('police-admin-token', authData.token);
-        setUser({ username: authData.email || email, role: 'Super Admin' });
-        return true;
-      }
-    } catch (e) {
-      console.error("Backend login request failed", e);
+
+      const account: User = {
+        username: payload.email,
+        role: 'Super Admin',
+        token: payload.token,
+      };
+      setUser(account);
+      return true;
+    } catch {
+      return false;
     }
-    return false;
   };
 
-  const logout = () => {
-    localStorage.removeItem('police-admin-token');
-    setUser(null);
-  };
+  const logout = () => setUser(null);
 
   const value = useMemo(() => ({ user, login, logout }), [user]);
 

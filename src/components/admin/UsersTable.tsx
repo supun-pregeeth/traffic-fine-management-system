@@ -1,54 +1,51 @@
-import { Chip, Paper, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { usersData } from '../../data/mockData';
+import { Paper, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { useEffect, useState } from 'react';
+import apiClient from '../../api/client';
 
-interface UsersTableProps {
-  users?: any[];
-}
-
-const roleColor = (role: string): 'error' | 'warning' | 'success' | 'default' => {
-  if (role === 'ADMIN') return 'error';
-  if (role === 'OFFICER') return 'warning';
-  if (role === 'DRIVER') return 'success';
-  return 'default';
+type UserRow = {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  phoneNumber?: string;
+  district?: string;
 };
 
-export default function UsersTable({ users }: UsersTableProps) {
-  // Use real backend data if available, fall back to mock
-  const rows = users && users.length > 0 ? users : usersData;
+export default function UsersTable() {
+  const [rows, setRows] = useState<UserRow[]>([]);
+
+  useEffect(() => {
+    async function loadUsers() {
+      try {
+        const res = await apiClient.get('/admin/users');
+        setRows(res.data?.data ?? []);
+      } catch (err) {
+        console.error('Failed to load users', err);
+      }
+    }
+    loadUsers();
+  }, []);
 
   return (
-    <Paper sx={{ boxShadow: 1 }}>
+    <Paper sx={{ boxShadow: 'soft' }}>
       <Table size="small">
-        <TableHead sx={{ bgcolor: 'action.hover' }}>
+        <TableHead>
           <TableRow>
-            <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
-            <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
-            <TableCell sx={{ fontWeight: 700 }}>Role</TableCell>
-            <TableCell sx={{ fontWeight: 700 }}>District</TableCell>
-            <TableCell sx={{ fontWeight: 700 }}>Phone</TableCell>
-            <TableCell sx={{ fontWeight: 700 }}>Joined</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Role</TableCell>
+            <TableCell>Phone</TableCell>
+            <TableCell>District</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, idx) => (
-            <TableRow key={row.email || idx}>
+          {rows.map((row) => (
+            <TableRow key={row.id}>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.email}</TableCell>
-              <TableCell>
-                <Chip
-                  size="small"
-                  label={row.role || row.department || '—'}
-                  color={roleColor(row.role)}
-                  variant="outlined"
-                />
-              </TableCell>
-              <TableCell>{row.district || row.department || '—'}</TableCell>
-              <TableCell>{row.phoneNumber || '—'}</TableCell>
-              <TableCell>
-                {row.createdAt
-                  ? new Date(row.createdAt).toLocaleDateString('en-GB')
-                  : row.status || '—'}
-              </TableCell>
+              <TableCell>{row.role}</TableCell>
+              <TableCell>{row.phoneNumber ?? '-'}</TableCell>
+              <TableCell>{row.district ?? '-'}</TableCell>
             </TableRow>
           ))}
         </TableBody>

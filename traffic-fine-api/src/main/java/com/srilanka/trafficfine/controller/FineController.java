@@ -49,6 +49,7 @@ public class FineController {
     }
 
     @GetMapping("/{referenceNumber}")
+    @PreAuthorize("hasAnyRole('OFFICER', 'DRIVER', 'ADMIN')")
     @Operation(summary = "Get fine by reference number")
     public ResponseEntity<ApiResponse<FineResponse>> getFineByReference(
             @PathVariable String referenceNumber) {

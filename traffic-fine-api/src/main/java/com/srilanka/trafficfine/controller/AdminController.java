@@ -3,11 +3,7 @@ package com.srilanka.trafficfine.controller;
 import com.srilanka.trafficfine.dto.response.AnalyticsResponse;
 import com.srilanka.trafficfine.dto.response.ApiResponse;
 import com.srilanka.trafficfine.dto.response.PaymentResponse;
-import com.srilanka.trafficfine.dto.response.UserResponse;
-import com.srilanka.trafficfine.enums.Role;
-import com.srilanka.trafficfine.repository.UserRepository;
 import com.srilanka.trafficfine.service.AnalyticsService;
-import com.srilanka.trafficfine.service.FineService;
 import com.srilanka.trafficfine.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -23,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Admin Portal controller — all endpoints require ROLE_ADMIN.
@@ -44,8 +39,6 @@ public class AdminController {
 
     private final AnalyticsService analyticsService;
     private final PaymentService paymentService;
-    private final FineService fineService;
-    private final UserRepository userRepository;
 
     @GetMapping("/analytics/district")
     @Operation(summary = "Total collections grouped by district")
@@ -95,31 +88,19 @@ public class AdminController {
         );
     }
 
-    @GetMapping("/fines")
-    @Operation(summary = "View all traffic fines (Admin only)")
-    public ResponseEntity<ApiResponse<List<com.srilanka.trafficfine.dto.response.FineResponse>>> allFines() {
-        return ResponseEntity.ok(
-            ApiResponse.success("All traffic fines", fineService.getAllFines())
-        );
-    }
-
     @GetMapping("/users")
-    @Operation(summary = "View all registered users")
-    public ResponseEntity<ApiResponse<List<UserResponse>>> allUsers() {
-        List<UserResponse> users = userRepository.findAll()
-                .stream()
-                .map(UserResponse::from)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(ApiResponse.success("All users", users));
+    @Operation(summary = "List all users (admin)")
+    public ResponseEntity<ApiResponse<java.util.List<com.srilanka.trafficfine.dto.response.UserResponse>>> allUsers() {
+        java.util.List<com.srilanka.trafficfine.entity.User> users = analyticsService.getAllUsers();
+        java.util.List<com.srilanka.trafficfine.dto.response.UserResponse> resp = users.stream().map(com.srilanka.trafficfine.dto.response.UserResponse::from).toList();
+        return ResponseEntity.ok(ApiResponse.success("All users", resp));
     }
 
-    @GetMapping("/users/officers")
-    @Operation(summary = "View all officers")
-    public ResponseEntity<ApiResponse<List<UserResponse>>> allOfficers() {
-        List<UserResponse> officers = userRepository.findAllByRole(Role.OFFICER)
-                .stream()
-                .map(UserResponse::from)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(ApiResponse.success("All officers", officers));
+    @GetMapping("/notifications")
+    @Operation(summary = "List notification logs")
+    public ResponseEntity<ApiResponse<java.util.List<com.srilanka.trafficfine.dto.response.NotificationLogResponse>>> notificationLogs() {
+        java.util.List<com.srilanka.trafficfine.entity.NotificationLog> logs = analyticsService.getAllNotificationLogs();
+        java.util.List<com.srilanka.trafficfine.dto.response.NotificationLogResponse> resp = logs.stream().map(com.srilanka.trafficfine.dto.response.NotificationLogResponse::from).toList();
+        return ResponseEntity.ok(ApiResponse.success("Notification logs", resp));
     }
 }

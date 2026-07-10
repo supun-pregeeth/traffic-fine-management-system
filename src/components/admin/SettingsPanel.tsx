@@ -1,4 +1,4 @@
-import { Button, Paper, Stack, Switch, Typography } from '@mui/material';
+import { Box, Button, Paper, Stack, Switch, Typography } from '@mui/material';
 
 export default function SettingsPanel() {
   return (
@@ -18,12 +18,12 @@ export default function SettingsPanel() {
           </Typography>
           <Stack spacing={1.5}>
             {['Enable option', 'Review configuration', 'Save changes'].map((label, index) => (
-              <Stack key={label} direction="row" justifyContent="space-between" alignItems="center">
+              <Box key={label} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="body2" color="text.secondary">
                   {label}
                 </Typography>
                 {index === 0 ? <Switch defaultChecked /> : <Button size="small" variant={index === 2 ? 'contained' : 'outlined'}>{index === 2 ? 'Save' : 'Configure'}</Button>}
-              </Stack>
+              </Box>
             ))}
           </Stack>
         </Paper>

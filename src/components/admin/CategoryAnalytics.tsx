@@ -1,35 +1,42 @@
 import { Grid, Paper, Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { useMemo } from 'react';
-import { categoryRevenue, finesData } from '../../data/mockData';
+import { fetchCategoryCollections } from '../../api/adminApi';
 import ChartCard from '../shared/ChartCard';
+import { useEffect, useState } from 'react';
 
-interface CategoryAnalyticsProps {
-  analyticsData?: {
-    collectionsByCategory?: Record<string, number>;
-  };
-}
+export default function CategoryAnalytics() {
+  const [categoryRevenue, setCategoryRevenue] = useState<Array<{ category: string; revenue: number }>>([]);
+  const [distribution, setDistribution] = useState<Array<{ name: string; value: number }>>([]);
 
-export default function CategoryAnalytics({ analyticsData }: CategoryAnalyticsProps) {
-  const chartData = useMemo(() => {
-    if (analyticsData?.collectionsByCategory && Object.keys(analyticsData.collectionsByCategory).length > 0) {
-      return Object.entries(analyticsData.collectionsByCategory).map(([cat, rev]) => ({
-        category: cat,
-        revenue: Number(rev) / 1000000
-      }));
+  useEffect(() => {
+    async function loadCategoryAnalytics() {
+      try {
+        const response = await fetchCategoryCollections();
+        const data = response.data?.data ?? {};
+        const revenueData = Object.entries(data).map(([category, value]) => ({
+          category,
+          revenue: Number(value ?? 0),
+        }));
+
+        setCategoryRevenue(revenueData);
+        setDistribution(revenueData.map((item) => ({ name: item.category, value: item.revenue })));
+      } catch (error) {
+        console.error('Unable to load category analytics', error);
+      }
     }
-    return categoryRevenue;
-  }, [analyticsData]);
+
+    loadCategoryAnalytics();
+  }, []);
 
   return (
     <Stack spacing={3}>
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <ChartCard title="Violation Category Distribution" subtitle="By number of fines issued">
+          <ChartCard title="Violation Category Distribution" subtitle="By total revenue per category">
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
-                <Pie data={finesData.map((item) => ({ name: item.violation, value: Number(item.amount.replace(/[^\d]/g, '')) }))} dataKey="value" nameKey="name" outerRadius={100}>
-                  {finesData.map((_, index) => (
+                <Pie data={distribution} dataKey="value" nameKey="name" outerRadius={100}>
+                  {distribution.map((_, index) => (
                     <Cell key={index} fill={['#003366', '#1a7a4a', '#c9a227', '#16a085', '#8e44ad', '#c0392b'][index % 6]} />
                   ))}
                 </Pie>
@@ -39,9 +46,9 @@ export default function CategoryAnalytics({ analyticsData }: CategoryAnalyticsPr
           </ChartCard>
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
-          <ChartCard title="Revenue by Category" subtitle="Total amount collected (LKR M)">
+          <ChartCard title="Revenue by Category" subtitle="Total amount collected (LKR)">
             <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={chartData}>
+              <BarChart data={categoryRevenue}>
                 <XAxis dataKey="category" tickLine={false} axisLine={false} />
                 <YAxis />
                 <Tooltip />
@@ -51,30 +58,19 @@ export default function CategoryAnalytics({ analyticsData }: CategoryAnalyticsPr
           </ChartCard>
         </Grid>
       </Grid>
-      <Paper sx={{ p: 0, boxShadow: 1 }}>
+      <Paper sx={{ p: 0, boxShadow: 'soft' }}>
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 700 }}>Category</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Fines Issued</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Paid</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Pending</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Revenue (LKR)</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Avg Fine</TableCell>
+              <TableCell>Category</TableCell>
+              <TableCell>Revenue (LKR)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {[
-              ['Speeding', '8,421', '7,102', '1,319', '52,631,250', '7,500'],
-              ['Parking Violations', '5,830', '5,210', '620', '17,430,000', '3,000'],
-              ['Signal Violations', '4,200', '3,800', '400', '25,200,000', '6,000'],
-              ['License Violations', '3,100', '2,700', '400', '31,000,000', '10,000'],
-              ['Dangerous Driving', '1,240', '1,100', '140', '24,800,000', '20,000']
-            ].map((row) => (
-              <TableRow key={row[0]}>
-                {row.map((cell) => (
-                  <TableCell key={String(cell)}>{cell}</TableCell>
-                ))}
+            {categoryRevenue.map((row) => (
+              <TableRow key={row.category}>
+                <TableCell>{row.category}</TableCell>
+                <TableCell>{row.revenue}</TableCell>
               </TableRow>
             ))}
           </TableBody>

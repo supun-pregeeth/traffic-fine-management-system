@@ -1,19 +1,25 @@
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { Card, CardContent, Typography } from '@mui/material';
 
-interface ChartCardProps {
+export default function ChartCard({
+  title,
+  subtitle,
+  children,
+}: {
   title: string;
   subtitle?: string;
   children: React.ReactNode;
-}
-
-export default function ChartCard({ title, subtitle, children }: ChartCardProps) {
+}) {
   return (
-    <Card sx={{ boxShadow: 1, p: 1 }}>
+    <Card sx={{ p: 2.5, boxShadow: 'soft', height: '100%' }}>
       <CardContent>
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="h6" sx={{ fontWeight: 800 }}>{title}</Typography>
-          {subtitle && <Typography variant="caption" color="text.secondary">{subtitle}</Typography>}
-        </Box>
+        <Typography variant="h6" sx={{ fontWeight: 900, mb: 1 }}>
+          {title}
+        </Typography>
+        {subtitle && (
+          <Typography color="text.secondary" variant="body2" sx={{ mb: 2 }}>
+            {subtitle}
+          </Typography>
+        )}
         {children}
       </CardContent>
     </Card>
