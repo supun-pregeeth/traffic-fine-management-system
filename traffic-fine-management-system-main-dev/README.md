@@ -24,4 +24,4 @@ traffic-fine-management-system/
 ├── citizen-web-portal/           # React + Vite citizen app
 ├── mobile-app/                   # Flutter mobile app
 ├── admin-web-portal/            # Admin frontend
-├── docs/                        # Documentation
+├── docs/                        # Documentation..
