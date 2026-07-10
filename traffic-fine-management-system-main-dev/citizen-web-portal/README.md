@@ -1,1 +1,0 @@
-# traffic-fine-management-system
